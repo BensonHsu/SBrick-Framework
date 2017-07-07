@@ -1,13 +1,14 @@
 # SBrick-Framework
-This is a python based interface for action with SBrick device. What can you do using SBrick-Framework:
+This is a python based interface for control SBrick devices. What is the benefit when you use SBrick-Framework:
 * Get detailed information: UUID, service, characteristic, adc(voltage, temperature) information...
-* Control LEGO power functions:
-  * Drive power function with a specific parameters: SBrick ID, channel, execution time...
+* Control LEGO power functions concurrently:
+  * Drive power functions
   * Stop power functions
+* Support multiple SBrick devices (not test yet)
   
-A thread is created to handle a channel action, and this means you can control LEGO power functions concurrently.
+A thread is created to handle a LEGO power function (a channel), and this means you can control LEGO power functions concurrently. The last drive function will overwrite the execution time of the related power function that is applied previously.
 
-SBrick-Framework is implemented by `BlueZ + SBrick protocol + libuv + MQTT protocol + mosquitto broker`, and the code is tested by python 3.4 on Raspberry Pi 3(RASPBIAN). <br />
+SBrick-Framework is implemented by `BlueZ + SBrick protocol + libuv + MQTT protocol + mosquitto broker`, and the code is tested by python 3.4 on Raspberry Pi 3(Raspbian Jessie). <br />
 
 Aarchitecture overview: <br />
 <img src="sbrick_arch.jpg" width="480" alt="Combined Image" />
@@ -17,7 +18,7 @@ Aarchitecture overview: <br />
 SbrickAPI is based on SBrick protocol 17 (https://social.sbrick.com/wiki/view/pageId/11/slug/the-sbrick-ble-protocol)
 
 
-## Dependencies
+## Requirements
 * Python 3.4
 * BlueZ
 * bluepy
@@ -33,6 +34,10 @@ $ hciconfig -a
 $ sudo hciconfig hci0 up
 $ sudo hcitool lescan
 $ bluetoothctl
+```
+Must make sure bluetooth control is active.
+```bash
+$ sudo hciconfig hci0 up
 ```
 
 ### bluepy
@@ -67,12 +72,8 @@ $ sudo systemctl enable mosquitto
 ```
 
 
-## TODO 
-* source code will be committed soon.
-
-
 ## Usage
-### Start SBrick server:
+### Start SBrick daemon:
 1. Usage of `sbrick_server.py`
 ```bash
 $ python3 sbrick_server.py -h
@@ -98,18 +99,23 @@ optional arguments:
                         WARNING | ERROR | CRITICAL]
 ```
 
-2. Scan SBrick devices. (must run as root)
+2. Scan SBrick devices. You can get SBrick MAC in this step. (must run as root)
 ```bash
 $ sudo python3 sbrick_server.py --scan
+$ sudo hcitool lescan
 ```
 
-3. Connect to SBrick devices. (must run as root)
+3. Start daemon server with connecting to a SBrick device. (must run as root)
 ```bash
 $ sudo python3 sbrick_server.py --connect --broker-ip 127.0.0.1 --broker-port 1883 --log-level debug --sbrick-id 11:22:33:44:55:66
 ```
 
+4. You can also control multiple SBrick devices. The usage is below:
+```bash
+$ sudo python3 sbrick_server.py --connect ..... --sbrick-id <SBrick1 MAC> <SBrick2 MAC> <SBrick3 MAC>
+```
 
-### Code example of SBrick client
+### Code example of using SBrick Client API
 Example of `SbrickIpcClient` class:
 ```python
 from lib.sbrick_m2mipc import SbrickIpcClient
@@ -119,16 +125,13 @@ client = SbrickIpcClient(broker_ip='127.0.0.1', broker_port=1883)
 client.connect()
 
 # Get voltage and temperature of a SBrick device
-client.rr_get_adc(sbrick_id='11:22:33:44:55:66', timeout=5)
-response = client.json_response
+json_response = client.rr_get_adc(sbrick_id='11:22:33:44:55:66', timeout=5)
 
 # Get information of UUID, sercies and characteristics of a SBrick device
-client.rr_get_service(sbrick_id='11:22:33:44:55:66', timeout=5)
-response = client.json_response
+json_response = client.rr_get_service(sbrick_id='11:22:33:44:55:66', timeout=5)
 
 # Get general information of a SBrick device
-client.rr_get_general(sbrick_id='11:22:33:44:55:66', timeout=5)
-response = client.json_response
+json_response = client.rr_get_general(sbrick_id='11:22:33:44:55:66', timeout=5)
 
 # Stop power functions
 client.publish_stop(sbrick_id='11:22:33:44:55:66', channel_list=['00', '01'])
@@ -156,11 +159,11 @@ client.disconnect()
   * Drive s LEGO power function
   * _Parameters_:
     * `sbrick_id`    : string. SBrick mac address. 11:22:33:44:55:66
-    * `channel`      : string. hex_string. 00, 01, 02, 03
+    * `channel`      : string. hex_string. the LEGO power function port you want to drive. 00, 01, 02, 03
     * `direction`    : string. clockwise or counterclockwise. hex_string. 00, 01
     * `power`        : string. hex_string. 00 ~ FF
-    * `exec_time`    : number. execution times in seconds, 5566 means forever
-  * _Return_:
+    * `exec_time`    : number. the executing time of LEGO power function in seconds, 5566 means forever
+  * _Return_:
     * No return
 * __publish_stop()__
   * Stop LEGO power functions
@@ -176,7 +179,7 @@ client.disconnect()
     * `timeout`      : number. timeout to get service in seconds.
   * _Return_:
     * Information in JSON format.
-    * `ret_code`: 100(success), 300(timeout)
+    * `ret_code`: 100(success), 220(bad_param), 300(timeout)
 * __rr_get_adc()__
   * Get information of voltage and temperature of a SBrick device
   * _Parameters_:
@@ -184,7 +187,7 @@ client.disconnect()
     * `timeout`      : number. timeout to get service in seconds.
   * _Return_:
     * Information in JSON format.
-    * `ret_code`: 100(success), 300(timeout)
+    * `ret_code`: 100(success), 220(bad_param), 300(timeout)
 * __rr_get_general()__
   * Get general information of a SBrick device
   * _Parameters_:
@@ -192,5 +195,5 @@ client.disconnect()
     * `timeout`      : number. timeout to get service in seconds.
   * _Return_:
     * Information in JSON format.
-    * `ret_code`: 100(success), 300(timeout)
+    * `ret_code`: 100(success), 220(bad_param), 300(timeout)
 
