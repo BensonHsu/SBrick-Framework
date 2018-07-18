@@ -1,0 +1,11 @@
+[Unit]
+Description=LEGO Ferris Wheel Timer
+
+[Timer]
+#OnCalendar=Mon-Fri *-*-* 07,08,09,10,18,19,20,21,22,23,00,01:00:00
+#OnCalendar=Sat,Sun *-*-* 07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23,00,01:00:00
+OnCalendar=Mon-Sun *-*-* 10,12,18,20,22,00:00:00
+Unit=ferriswheel.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=LEGO Ferris Wheel
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /home/benson/project/sbrick/ferriswheel.py
