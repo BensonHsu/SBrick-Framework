@@ -1,14 +1,13 @@
 import pyuv
 import signal
-import paho.mqtt.client as Mqtt
 import logging
 import argparse
 import re
 import sys
-from lib.sbrick_api import ScanAPI, SbrickAPI
+from lib.sbrick_api import ScanAPI
 from lib.sbrick_m2mipc import SbrickIpcServer
 
-LOG_FORMAT = "%(asctime)s [%(name)s.%(levelname)s] %(threadName)s - %(message)s"
+LOG_FORMAT = "%(asctime)s [%(filename)s:%(lineno)s(%(levelname)s)] %(threadName)s - %(message)s"
 
 class ServerArgParse(object):
     def __init__(self):

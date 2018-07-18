@@ -22,8 +22,6 @@ class ScanAPI(object):
                 print("Discovered device {} ({})".format(dev.addr, dev.iface))
             elif isNewData:
                 print("Received new data from {} ({})".format(dev.addr, dev.iface))
-                scan_datas = dev.getScanData()
-                print(scan_datas)
 
 
     @staticmethod
@@ -33,10 +31,7 @@ class ScanAPI(object):
         devices = scanner.scan(timeout)
 
         for dev in devices:
-            print("Device {} ({}) ({}), RSSI={} db ".format(dev.addr, dev.addrType, dev.iface, dev.rssi))
-            for (adtype, desc, value) in dev.getScanData():
-                print(" {} = {}".format(desc, value))
-                # TODO: parse manufacturer specific data
+            print("Device {} RSSI={} db, addrType={}, iface={}, connectable={}".format(dev.addr, dev.rssi, dev.addrType, dev.iface, dev.connectable))
 
 
 
@@ -234,8 +229,9 @@ class SbrickAPI(object):
 
 
     def drive(self, channel='00', direction='00', power='f0', exec_time=1):
-        # not reset status when thread finish
+        # reset thread status when the thread is dead
         if self._channel_thread[channel] and not self._channel_thread[channel].is_alive():
+            self._channel_thread[channel].join()
             self._channel_thread[channel] = None
 
         if None == self._channel_thread[channel]:
@@ -255,7 +251,7 @@ class SbrickAPI(object):
 
     def stop(self, channels=['00']):
         # TODO: validate parameters
-        slef._logger.debug('Stop action')
+        self._logger.debug('Stop action')
         for channel in channels:
             thd = self._channel_thread[channel]
             if thd:
@@ -363,6 +359,7 @@ class SbrickAPI(object):
                 #characteristic['value'] = c.read() if c.supportsRead() else ''
                 service['characteristics'].append(characteristic)
             ret.append(service)
+        self.disconnect()
         return ret
 
 
@@ -388,6 +385,7 @@ class SbrickAPI(object):
 
         ret['temperature'] = self._temperature
         ret['voltage'] = self._voltage
+        self.disconnect()
         return ret
 
 
@@ -500,6 +498,7 @@ class SbrickAPI(object):
         ret['is_quest_password_set'] = self._is_quest_pw_set
         ret['power_cycle_count'] = self._power_cycle_counter
         ret['uptime_count'] = self._uptime_counter
+        self.disconnect()
         return ret
 
 

@@ -2,9 +2,8 @@ import sys
 import json
 import pyuv
 import logging
-from bluepy.btle import Peripheral, BTLEException
 from lib.m2mipc import M2mipc, REQ_RESP_DONE, REQ_RESP_TIMEOUT
-from lib.sbrick_api import ScanAPI, SbrickAPI
+from lib.sbrick_api import  SbrickAPI
 from lib.sbrick_protocol import SbrickProtocol
 
 
@@ -122,7 +121,7 @@ class SbrickIpcClient():
     def _set_logger(self):
         logger = logging.getLogger('SBrick_Client')
         stream_handler = logging.StreamHandler(sys.stdout)
-        log_format = "%(asctime)s [%(name)s.%(levelname)s] %(message)s"
+        log_format = "%(asctime)s [%(filename)s:%(lineno)s(%(levelname)s)] - %(message)s"
         stream_handler.setFormatter(logging.Formatter(fmt=log_format))
         logger.setLevel(logging.INFO)
         logger.addHandler(stream_handler)

@@ -113,7 +113,7 @@ class M2mipc(Mqtt.Client):
             timer.start(self._on_uv_timer, 1, 1)
             self._uv_timer = timer
         else:
-            raise Error("Connect to broker failed.")
+            raise Exception("Connect to broker failed.")
     
     def disconnect(self):
         super(M2mipc, self).disconnect()
