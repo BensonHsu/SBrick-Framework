@@ -14,7 +14,7 @@ Aarchitecture overview: <br />
 <img src="sbrick_arch.jpg" width="480" alt="Combined Image" />
 
 ## User-Story
-* <a href="https://github.com/BensonHsu/SBrick-Framework/blob/master/story/ferriswheel/ferriswheel.md">LEGO Ferris Wheel Set 10247</a>
+* <a href="https://github.com/BensonHsu/SBrick-Framework/tree/master/story/ferriswheel">LEGO Ferris Wheel Set 10247</a>
 
 ## SBrick Protocol
 SbrickAPI is based on SBrick protocol 17 (https://social.sbrick.com/wiki/view/pageId/11/slug/the-sbrick-ble-protocol)
