@@ -140,7 +140,7 @@ client.publish_stop(sbrick_id='11:22:33:44:55:66', channel_list=['00', '01'])
 
 # Drive a power function
 client.publish_drive(sbrick_id='11:22:33:44:55:66',
-                     channnel='00',
+                     channel='00',
                      direction='00',
                      power='f0',
                      exec_time=10)
