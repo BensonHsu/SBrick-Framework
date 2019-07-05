@@ -81,6 +81,8 @@ $ sudo systemctl enable mosquitto
 $ python3 sbrick_server.py -h
 usage: sbrick_server.py [-h] (--connect | --scan) [--broker-ip BROKER_IP]
                         [--broker-port BROKER_PORT]
+                        [--broker-user BROKER_USER]
+                        [--broker-passwd BROKER_PASSWD]
                         [--sbrick-id SBRICK_ID [SBRICK_ID ...]]
                         [--log-level LOG_LEVEL]
 
@@ -94,6 +96,10 @@ optional arguments:
                         MQTT broker ip address. Default is 127.0.0.1
   --broker-port BROKER_PORT
                         MQTT broker port. Default is 1883
+  --broker-user BROKER_USER
+                        MQTT broker username. Default is None
+  --broker-passwd BROKER_PASSWD
+                        MQTT broker password. Default is None
   --sbrick-id SBRICK_ID [SBRICK_ID ...]
                         list of SBrick MAC to connect to
   --log-level LOG_LEVEL
