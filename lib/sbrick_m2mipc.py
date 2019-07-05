@@ -26,8 +26,9 @@ class SbrickIpcServer():
         # connect to MQTT broker
         m2m = M2mipc('sbrick_server', self._loop)
         m2m.on_connect = self._on_mqtt_connect
-        if _broker_user is not None or _broker_passwd is not None:
-            m2m.username_pw_set(_broker_user, password=self._broker_passwd)
+        if self._broker_user is not None or self._broker_passwd is not None:
+            m2m.username_pw_set(self._broker_user, password=self._broker_passwd)
+
         m2m.connect(self._broker_ip, self._broker_port)
         self._m2mipc = m2m
 

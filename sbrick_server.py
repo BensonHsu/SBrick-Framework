@@ -111,10 +111,10 @@ if __name__ == '__main__':
 
         signal_h = pyuv.Signal(loop)
         signal_h.start(signal_cb, signal.SIGINT)
-
-        server = SbrickIpcServer(logger, args.broker_ip, args.broker_port, loop, args.broker_user, args.broker_user)
+        
+        server = SbrickIpcServer(logger, args.broker_ip, args.broker_port, loop, args.broker_user, args.broker_passwd)
         server.connect(args.sbrick_id)
 
-        #loop.run()
+        loop.run()
     elif args.scan:
         ScanAPI().scan(timeout=10)
