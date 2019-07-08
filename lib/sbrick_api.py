@@ -61,7 +61,7 @@ class SbrickAPI(object):
 
         def drive(self):
             self.drive_channel()
-            self.break_channel()
+            #self.break_channel()
 
         def stop(self):
             self._stop_event.set()
