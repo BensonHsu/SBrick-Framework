@@ -5,6 +5,7 @@ import subprocess
 import shlex
 from threading import Thread, Timer, Event, Lock
 from bluepy.btle import Peripheral, BTLEException, Scanner, DefaultDelegate
+import inspect
 
 MAGIC_FOREVER = 5566
 
@@ -280,7 +281,7 @@ class SbrickAPI(object):
         except BTLEException as e:
             self._lock.release()
             self._logger.error('SBrick ({}): {}'.format(self._dev_mac, e.message))
-            if BTLEException.DISCONNECTED == e.code:
+            if inspect.isclass(e, BTLEDisconnectError):
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
