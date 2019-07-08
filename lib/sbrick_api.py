@@ -285,7 +285,7 @@ class SbrickAPI(object):
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
-            elif isinstance(e,BTLEInternalError) == e.code and "Helper not started (did you call connect()?)" == e.message:
+            elif isinstance(e,BTLEInternalError) and "Helper not started (did you call connect()?)" == e.message:
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
