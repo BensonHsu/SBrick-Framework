@@ -148,7 +148,7 @@ class SbrickAPI(object):
         self._blue = Peripheral()
         self._lock.release()
 
-
+    #Arrumar aqui
     def connect(self):
         try:
             self._lock.acquire()
@@ -158,7 +158,7 @@ class SbrickAPI(object):
         except BTLEException as e:
             self._lock.release()
             self._logger.error('SBrick ({}): {}'.format(self._dev_mac, e.message))
-            if BTLEException.DISCONNECTED == e.code:
+            if isinstance(e, BTLEDisconnectError):
                 return False
             else:
                 self._construct_new_bluetooth_object()
