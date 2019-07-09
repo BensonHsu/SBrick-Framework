@@ -148,7 +148,6 @@ class SbrickAPI(object):
         self._blue = Peripheral()
         self._lock.release()
 
-    #Arrumar aqui
     def connect(self):
         try:
             self._lock.acquire()
