@@ -4,7 +4,8 @@ import time
 import subprocess
 import shlex
 from threading import Thread, Timer, Event, Lock
-from bluepy.btle import Peripheral, BTLEException, Scanner, DefaultDelegate
+from bluepy.btle import Peripheral, BTLEException, Scanner, DefaultDelegate, BTLEDisconnectError, BTLEInternalError
+import inspect
 
 MAGIC_FOREVER = 5566
 
@@ -147,7 +148,6 @@ class SbrickAPI(object):
         self._blue = Peripheral()
         self._lock.release()
 
-
     def connect(self):
         try:
             self._lock.acquire()
@@ -157,7 +157,7 @@ class SbrickAPI(object):
         except BTLEException as e:
             self._lock.release()
             self._logger.error('SBrick ({}): {}'.format(self._dev_mac, e.message))
-            if BTLEException.DISCONNECTED == e.code:
+            if isinstance(e, BTLEDisconnectError):
                 return False
             else:
                 self._construct_new_bluetooth_object()
@@ -280,11 +280,11 @@ class SbrickAPI(object):
         except BTLEException as e:
             self._lock.release()
             self._logger.error('SBrick ({}): {}'.format(self._dev_mac, e.message))
-            if BTLEException.DISCONNECTED == e.code:
+            if isinstance(e, BTLEDisconnectError):
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
-            elif BTLEException.INTERNAL_ERROR == e.code and "Helper not started (did you call connect()?)" == e.message:
+            elif isinstance(e,BTLEInternalError) and "Helper not started (did you call connect()?)" == e.message:
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)

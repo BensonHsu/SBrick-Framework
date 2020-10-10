@@ -25,6 +25,8 @@ class ServerArgParse(object):
         connect = parser.add_argument_group('--connect')
         connect.add_argument('--broker-ip', type=self._ip_validation, default='127.0.0.1', help='MQTT broker ip address. Default is 127.0.0.1')
         connect.add_argument('--broker-port', type=self._port_validation, default=1883, help='MQTT broker port. Default is 1883')
+        connect.add_argument('--broker-user', type=self._user_validation, default=None, help='MQTT broker username. Default is None')
+        connect.add_argument('--broker-passwd', type=self._passwd_validation, default=None, help='MQTT broker password. Default is None')
         connect.add_argument('--sbrick-id', nargs='+', type=self._mac_validation, help='list of SBrick MAC to connect to')
         connect.add_argument('--log-level', type=self._log_level_validation, default='INFO', help='Log verbose level. Default is INFO. [DEBUG | INFO | WARNING | ERROR | CRITICAL]')
 
@@ -63,6 +65,12 @@ class ServerArgParse(object):
 
     def _mac_validation(self, string):
         # TODO
+        return string
+    
+    def _user_validation(self, string):
+        return string
+
+    def _passwd_validation(self, string):
         return string
 
 
@@ -103,8 +111,8 @@ if __name__ == '__main__':
 
         signal_h = pyuv.Signal(loop)
         signal_h.start(signal_cb, signal.SIGINT)
-
-        server = SbrickIpcServer(logger, args.broker_ip, args.broker_port, loop)
+        
+        server = SbrickIpcServer(logger, args.broker_ip, args.broker_port, loop, args.broker_user, args.broker_passwd)
         server.connect(args.sbrick_id)
 
         loop.run()

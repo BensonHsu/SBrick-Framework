@@ -8,11 +8,13 @@ from lib.sbrick_protocol import SbrickProtocol
 
 
 class SbrickIpcServer():
-    def __init__(self, logger, broker_ip, broker_port, loop):
+    def __init__(self, logger, broker_ip, broker_port,loop, broker_user=None,broker_passwd=None):
         self._loop = loop
         self._logger = logger
         self._broker_ip = broker_ip
         self._broker_port = broker_port
+        self._broker_user = broker_user
+        self._broker_passwd = broker_passwd
         
         self._protocol = SbrickProtocol()
 
@@ -24,6 +26,9 @@ class SbrickIpcServer():
         # connect to MQTT broker
         m2m = M2mipc('sbrick_server', self._loop)
         m2m.on_connect = self._on_mqtt_connect
+        if self._broker_user is not None or self._broker_passwd is not None:
+            m2m.username_pw_set(self._broker_user, password=self._broker_passwd)
+
         m2m.connect(self._broker_ip, self._broker_port)
         self._m2mipc = m2m
 
