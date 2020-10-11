@@ -23,7 +23,7 @@ SbrickAPI is based on SBrick protocol 17 (https://social.sbrick.com/wiki/view/pa
 ## Requirements
 * Python 3.4
 * BlueZ
-* bluepy
+* bluepy v1.1.4
 * pyuv
 * paho-mqtt
 * mosquitto
@@ -42,11 +42,11 @@ Must make sure bluetooth control is active.
 $ sudo hciconfig hci0 up
 ```
 
-### bluepy
+### bluepy v1.1.4
 bluepy is a Python module which provides an interface to Bluetooth LE on Linux.<br />
 Ref: https://github.com/IanHarvey/bluepy
 ```bash
-$ pip3 install bluepy
+$ pip3 install bluepy==1.1.4
 ```
 
 ### pyuv
