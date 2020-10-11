@@ -106,7 +106,6 @@ class SbrickAPI(object):
             binary = bytes.fromhex(hex_string)
             self._sbrick.rcc_char_write_ex(binary, reconnect_do_again=False)
             #self._sbrick.rcc_char_read_ex(reconnect_do_again=False)
-            
 
         @property
         def stop_event(self):
@@ -165,13 +164,13 @@ class SbrickAPI(object):
                 sys.exit(-1)
         except Exception as e:
             self._lock.release()
-            self._logger.error(e)    
+            self._logger.error(e)
             self._construct_new_bluetooth_object()
             self._logger.error('exit -1')
             sys.exit(-1)
         else:
             self._logger.info('Connect to SBrick ({}) successfully'.format(self._dev_mac))
-        
+
         # Get remote control command characteristic
         try:
             self._logger.info('Get rcc characteristic')
@@ -199,9 +198,9 @@ class SbrickAPI(object):
         else:
             self._services = services
             self._lock.release()
-            
+
         return True
- 
+
 
     def disconnect_ex(self):
         # disconnect SBrick using bluetoothctl command
@@ -213,7 +212,7 @@ class SbrickAPI(object):
         p2.communicate()
         # wait 3 seconds for real disconnection, because `bluetoothctl #disconnect` is an asynchronous command
         time.sleep(3)
-        
+
 
     def disconnect(self):
         self._lock.acquire()
@@ -246,7 +245,6 @@ class SbrickAPI(object):
             running_thd = self._channel_thread[channel]
             running_thd.reset_command(channel, direction, power)
             running_thd.reset_timer(exec_time)
-        
 
 
     def stop(self, channels=['00']):
@@ -268,9 +266,12 @@ class SbrickAPI(object):
             self._lock.release()
             self._construct_new_bluetooth_object()
             if False == self.re_connect(): return False
+        else:
+            self._lock.release()
 
         # write binary
         try:
+            self._lock.acquire()
             self._rcc_char.write(binary)
         except BrokenPipeError as e:
             self._lock.release()
@@ -284,8 +285,11 @@ class SbrickAPI(object):
                 self._construct_new_bluetooth_object()
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
-            elif isinstance(e,BTLEInternalError) and "Helper not started (did you call connect()?)" == e.message:
+            elif isinstance(e, BTLEInternalError) and "Helper not started (did you call connect()?)" == e.message:
                 self._construct_new_bluetooth_object()
+                if False == self.re_connect(): return False
+                if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
+            elif isinstance(e, BTLEException) and "Error from bluepy-helper (badstate)" == e.message:
                 if False == self.re_connect(): return False
                 if reconnect_do_again: self.rcc_char_write_ex(binary, reconnect_do_again=False)
             else:
@@ -301,7 +305,6 @@ class SbrickAPI(object):
         else:
             self._lock.release()
 
-        
         return True
 
 
@@ -332,7 +335,7 @@ class SbrickAPI(object):
             sys.exit(-1)
         else:
             self._lock.release()
-            
+
         return out
 
 

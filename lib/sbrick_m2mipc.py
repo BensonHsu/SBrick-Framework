@@ -15,7 +15,7 @@ class SbrickIpcServer():
         self._broker_port = broker_port
         self._broker_user = broker_user
         self._broker_passwd = broker_passwd
-        
+
         self._protocol = SbrickProtocol()
 
         # sbrick_id -> sbrick object
@@ -169,7 +169,7 @@ class SbrickIpcClient():
         client.send(json_payload)
         self._loop.run()
         return self._json_response
-        
+
 
     def rr_get_adc(self, sbrick_id, timeout):
         topic = self._protocol.gen_rr_topic('get_adc')
@@ -206,7 +206,7 @@ class SbrickIpcClient():
         self._json_response = json.dumps(response)
 
         self._loop.stop()
- 
+
 
     @property
     def json_response(self):
